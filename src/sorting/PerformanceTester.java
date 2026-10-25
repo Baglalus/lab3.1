@@ -1,5 +1,6 @@
 package sorting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,30 +24,28 @@ public class PerformanceTester {
     private static final long TIME_BUDGET_MS = 30_000;
 
     public void test(SortingAlgorithm... algs) {
-        List<double[]> averages = Arrays.stream(algs).map(PerformanceTester::measure).toList();
-        printTable(algs, averages);
+        List<List<Double>> avgTimes = Arrays.stream(algs).map(PerformanceTester::measure).toList();
+        printTable(algs, avgTimes);
     }
 
-    /** Среднее время (мс) для каждой строки RUNS; NaN — строка пропущена. */
-    private static double[] measure(SortingAlgorithm alg) {
-        double[] avg = new double[RUNS.size()];
-        Arrays.fill(avg, Double.NaN);
-        for (int r = 0; r < RUNS.size(); r++) {
-            Run run = RUNS.get(r);
+    /** Среднее время (мс) по строкам RUNS; после превышения лимита оставшиеся строки не замеряются. */
+    private static List<Double> measure(SortingAlgorithm alg) {
+        List<Double> avgTimes = new ArrayList<>();
+        for (Run run : RUNS) {
             long deadline = System.currentTimeMillis() + TIME_BUDGET_MS;
             var stats = IntStream.range(0, run.numIters())
                     .takeWhile(i -> System.currentTimeMillis() < deadline)
                     .mapToLong(i -> timeSort(alg, run.numElems()))
                     .summaryStatistics();
-            avg[r] = stats.getAverage();
+            avgTimes.add(stats.getAverage());
             System.out.printf("%-14s %,10d элем.: %4d/%-4d итераций, среднее %10.3f мс%n",
-                    alg, run.numElems(), stats.getCount(), run.numIters(), avg[r]);
+                    alg, run.numElems(), stats.getCount(), run.numIters(), stats.getAverage());
             if (stats.getCount() < run.numIters()) {
-                System.out.printf("%-14s превышен лимит %d с, бóльшие размеры пропущены%n", alg, TIME_BUDGET_MS / 1000);
+                System.out.printf("%-14s превышен лимит %d с, большие размеры пропущены%n", alg, TIME_BUDGET_MS / 1000);
                 break;
             }
         }
-        return avg;
+        return avgTimes;
     }
 
     private static long timeSort(SortingAlgorithm alg, int numElems) {
@@ -61,7 +60,7 @@ public class PerformanceTester {
         return ThreadLocalRandom.current().doubles(numElems).toArray();
     }
 
-    private static void printTable(SortingAlgorithm[] algs, List<double[]> averages) {
+    private static void printTable(SortingAlgorithm[] algs, List<List<Double>> avgTimes) {
         StringBuilder header = new StringBuilder("%12s |".formatted("Кол-во элем."));
         for (SortingAlgorithm alg : algs) {
             header.append(" %14s |".formatted(alg));
@@ -72,8 +71,8 @@ public class PerformanceTester {
         System.out.println("-".repeat(header.length()));
         for (int r = 0; r < RUNS.size(); r++) {
             System.out.printf("%12d |", RUNS.get(r).numElems());
-            for (double[] avg : averages) {
-                System.out.print(Double.isNaN(avg[r]) ? " %14s |".formatted("—") : " %14.3f |".formatted(avg[r]));
+            for (List<Double> times : avgTimes) {
+                System.out.print(r < times.size() ? " %14.3f |".formatted(times.get(r)) : " %14s |".formatted("—"));
             }
             System.out.println();
         }
