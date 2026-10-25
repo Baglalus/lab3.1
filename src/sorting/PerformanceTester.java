@@ -3,7 +3,6 @@ package sorting;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /** Сравнение среднего времени сортировки случайных массивов разного размера. */
@@ -63,17 +62,20 @@ public class PerformanceTester {
     }
 
     private static void printTable(SortingAlgorithm[] algs, List<double[]> averages) {
-        String header = Arrays.stream(algs)
-                .map("%14s"::formatted)
-                .collect(Collectors.joining(" | ", "%12s | ".formatted("Кол-во элем."), ""));
+        StringBuilder header = new StringBuilder("%12s |".formatted("Кол-во элем."));
+        for (SortingAlgorithm alg : algs) {
+            header.append(" %14s |".formatted(alg));
+        }
         System.out.println();
         System.out.println("Время выполнения, мс");
         System.out.println(header);
         System.out.println("-".repeat(header.length()));
-        IntStream.range(0, RUNS.size())
-                .mapToObj(r -> averages.stream()
-                        .map(avg -> Double.isNaN(avg[r]) ? "%14s".formatted("—") : "%14.3f".formatted(avg[r]))
-                        .collect(Collectors.joining(" | ", "%12d | ".formatted(RUNS.get(r).numElems()), "")))
-                .forEach(System.out::println);
+        for (int r = 0; r < RUNS.size(); r++) {
+            System.out.printf("%12d |", RUNS.get(r).numElems());
+            for (double[] avg : averages) {
+                System.out.print(Double.isNaN(avg[r]) ? " %14s |".formatted("—") : " %14.3f |".formatted(avg[r]));
+            }
+            System.out.println();
+        }
     }
 }
