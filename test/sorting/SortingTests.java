@@ -105,8 +105,7 @@ public class SortingTests {
         assertTrue(noOp.calls == 2210, "ожидалось 2210 сортировок, было " + noOp.calls);
         assertTrue(printed.contains("NoOpSort"), "в выводе нет имени алгоритма");
         for (String size : List.of("100", "1000", "10000", "100000", "1000000")) {
-            assertTrue(printed.lines().anyMatch(line -> line.trim().startsWith(size + " ")
-                            || line.trim().startsWith(size + "|")),
+            assertTrue(printed.lines().anyMatch(line -> line.trim().startsWith(size + " ")),
                     "в таблице нет строки для " + size + " элементов");
         }
     }
@@ -126,7 +125,7 @@ public class SortingTests {
         try {
             test.run();
             passed++;
-        } catch (AssertionError | RuntimeException e) {
+        } catch (Throwable e) {
             failed++;
             System.out.println("FAIL " + name + ": " + e);
         }
