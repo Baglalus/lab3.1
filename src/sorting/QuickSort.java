@@ -22,7 +22,7 @@ public class QuickSort extends SortingAlgorithm {
                 while (a[j] > pivot) j--;
                 if (i <= j) swap(a, i++, j--);
             }
-            // рекурсия в меньшую часть, цикл по большей — глубина стека O(log n)
+            // рекурсия в меньшую часть
             if (j - lo < hi - i) {
                 sort(a, lo, j);
                 lo = i;

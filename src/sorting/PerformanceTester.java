@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
-/** Сравнение среднего времени сортировки случайных массивов разного размера. */
 public class PerformanceTester {
 
     private record Run(int numIters, int numElems) {}
 
-    /** Таблица 1 из задания. */
+    // Таблица 1 из задания. 
     private static final List<Run> RUNS = List.of(
             new Run(1000, 100),
             new Run(1000, 1_000),
@@ -19,8 +18,7 @@ public class PerformanceTester {
             new Run(100, 100_000),
             new Run(10, 1_000_000));
 
-    // shortcut: строка таблицы обрывается через 30 с, а большие размеры пропускаются — иначе O(n²)-сортировки
-    // на 10⁵–10⁶ элементов идут часами; для полного прогона увеличьте лимит
+    // мак на m3 3 часа будет в бабл сорт перебирать лям 10 раз, дэ дэ....
     private static final long TIME_BUDGET_MS = 30_000;
 
     public void test(SortingAlgorithm... algs) {
@@ -28,7 +26,7 @@ public class PerformanceTester {
         printTable(algs, avgTimes);
     }
 
-    /** Среднее время (мс) по строкам RUNS; после превышения лимита оставшиеся строки не замеряются. */
+    // Среднее время в мс по таблице, после превышения лимита оставшиеся строки не замеряются. 
     private static List<Double> measure(SortingAlgorithm alg) {
         List<Double> avgTimes = new ArrayList<>();
         for (Run run : RUNS) {

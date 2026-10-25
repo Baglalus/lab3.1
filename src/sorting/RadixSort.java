@@ -1,6 +1,6 @@
 package sorting;
 
-/** Поразрядная LSD-сортировка по байтам 64-битного представления double. */
+// Поразрядная LSD-сортировка по байтам 64-битного представления double. 
 public class RadixSort extends SortingAlgorithm {
 
     @Override

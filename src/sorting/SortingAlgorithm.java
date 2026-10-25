@@ -1,6 +1,5 @@
 package sorting;
 
-/** Базовый класс алгоритмов сортировки массивов double. */
 public abstract class SortingAlgorithm {
 
     public abstract void sortAsc(double[] values);
@@ -18,6 +17,8 @@ public abstract class SortingAlgorithm {
         a[j] = t;
     }
 
+    // Нужно для sortDesc, но идея каловая конечно. Но даже в std java
+    // sort через reverseOrder дольше втф 😭
     protected static void reverse(double[] a) {
         for (int i = 0, j = a.length - 1; i < j; i++, j--) {
             swap(a, i, j);
